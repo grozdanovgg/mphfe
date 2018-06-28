@@ -7,7 +7,7 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor 
 	$ npm install
 
 ## Usage
-
+Make sure you use global gulp 3.9.0 (3.9.1 causes bug - Requiring external module babel/register).
 Run `$ gulp --watch` and load the `dist`-directory into chrome.
 
 ## Entryfiles (bundles)
