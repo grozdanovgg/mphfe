@@ -33,7 +33,6 @@
     "chromereload": "0.x.x",
     "debounce": "1.x.x",
     "del": "3.x.x",
-    "gulp": "3.x.x",
     "gulp-bump": "2.x.x",
     "gulp-cache": "0.x.x",
     "gulp-clean-css": "^3.x.x",
@@ -62,7 +61,10 @@
   },
   "dependencies": {
     "@babel/register": "^7.0.0-beta.51",
+    "@types/gulp": "^4.0.5",
     "babel-register": "^6.26.0",
+    "g": "^2.0.1",
+    "gulp": "3.9.0",
     "jquery": "^3.3.1",
     "typescript": "^2.9.2"
   }
