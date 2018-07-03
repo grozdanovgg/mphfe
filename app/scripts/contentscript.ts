@@ -1,19 +1,17 @@
-// const pools = [
-//     {
-//         name: 'omegapool',
-//         blocksUrl: 'https://omegapool.cc/index.php?coin=raven&page=blocks',
-//         blochsHtmlSelector: '#main > div > div > table > tbody > tr:nth-child(2) > td:nth-child(1) > a',
+import * as $ from 'jquery';
 
-//     }
-// ]
+const pools = [
+    {
+        name: 'omegapool',
+        blocksUrl: 'https://omegapool.cc/index.php?coin=raven&page=blocks',
+        blochsHtmlSelector: '#main > div > div > table > tbody > tr:nth-child(2) > td:nth-child(1) > a',
 
+    }
+];
 
-// console.log('HEEEEEEEEEEEY');
-// const lastBlock = $(pool.blochsHtmlSelector);
-// console.log(lastBlock);
-// console.log('END')
+const lastBlock = $(pools[0].blochsHtmlSelector);
+console.log(lastBlock);
 
-console.log('IN SELECTOR');
 
 $('body').mousemove(function (event) {
     // console.log(event)
@@ -38,14 +36,6 @@ $(document).click(function (event) {
         $('.mphce-hover').removeClass('mphce-hover');
     });
 });
-
-
-
-
-
-
-
-
 
 function fullPath(el: any) {
     const names = [];
