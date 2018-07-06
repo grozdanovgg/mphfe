@@ -31,26 +31,30 @@ import Pool from '../Pools/Pool';
 // }
 
 
-async function addPool(pool: Pool): Promise<Pool | void> {
-    chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {
-        if (!response.pools) {
-            response = { pools: [] };
-        }
-        const duplicatePool = response.pools.findIndex(
-            (existingPool) => {
-                return existingPool.name === pool.name;
+function addPool(pool: Pool): Promise<Pool | void> {
+    return new Promise((resolve, reject) => {
+        chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {
+            if (!response.pools) {
+                response = { pools: [] };
             }
-        );
+            const duplicatePool = response.pools.findIndex(
+                (existingPool) => {
+                    return existingPool.name === pool.name;
+                }
+            );
 
-        if (duplicatePool === -1) {
-            response.pools.push(pool);
-            chrome.storage.sync.set({ pools: response.pools }, () => {
-                console.log('Value is set to: ');
-                console.log(pool);
-            });
-        } else {
-            throw Error('A pool with this name is already added.');
-        }
+            if (duplicatePool === -1) {
+                response.pools.push(pool);
+                chrome.storage.sync.set({ pools: response.pools }, () => {
+                    console.log('Value is set to: ');
+                    console.log(pool);
+
+                    resolve(pool);
+                });
+            } else {
+                reject('A pool with this name is already added.');
+            }
+        });
     });
 }
 

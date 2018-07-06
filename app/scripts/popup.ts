@@ -4,6 +4,8 @@ import * as $ from 'jquery';
 import repositoryService from './Services/repositoryService';
 import IPool from './Pools/IPool';
 
+updateTableBody();
+
 // let addBlockBtn = document.getElementById('add-block-to-pool');
 let savePoolBtn = document.getElementById('save-pool');
 
@@ -25,19 +27,20 @@ let savePoolBtn = document.getElementById('save-pool');
 
 if (savePoolBtn) {
 
-    savePoolBtn.onclick = async (element: MouseEvent) => {
+    savePoolBtn.onclick = (element: MouseEvent) => {
 
         const name: string = <string>$('#pool-name').val();
         const lastBlockHTMLSelector = $('#pool-block-selector').val();
         const pool = new Pool(name);
         pool.lastBlockHTMLSelector = <string>lastBlockHTMLSelector;
 
-        try {
-            await repositoryService.addPool(pool);
-            updateTableBody();
-        } catch (error) {
-            console.log(error);
-        }
+        repositoryService.addPool(pool)
+            .then((result) => {
+                console.log(result);
+                updateTableBody();
+            }).catch((err) => {
+                console.log(err);
+            });
 
     };
 }
