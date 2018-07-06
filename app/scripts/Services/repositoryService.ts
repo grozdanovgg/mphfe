@@ -58,11 +58,39 @@ function addPool(pool: Pool): Promise<Pool | void> {
     });
 }
 
+function removePool(poolName: string): Promise<Pool | void> {
+    return new Promise((resolve, reject) => {
+
+        chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {
+            if (!response.pools) {
+                response = { pools: [] };
+            }
+            const poolToRemove = response.pools.findIndex(
+                (existingPool) => {
+                    return existingPool.name === poolName;
+                }
+            );
+
+            if (poolToRemove > -1) {
+
+                response.pools.splice(poolToRemove, 1);
+
+                chrome.storage.sync.set({ pools: response.pools }, () => {
+                    resolve();
+                });
+            } else {
+                reject();
+            }
+        });
+    });
+}
+
 
 
 const repositoryService = {
     // addToken,
-    addPool
+    addPool,
+    removePool
 };
 
 export default repositoryService;

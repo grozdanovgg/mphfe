@@ -4,69 +4,98 @@ import * as $ from 'jquery';
 import repositoryService from './Services/repositoryService';
 import IPool from './Pools/IPool';
 
-updateTableBody();
+initTable();
 
 // let addBlockBtn = document.getElementById('add-block-to-pool');
-let savePoolBtn = document.getElementById('save-pool');
+const table: HTMLTableElement | null = document.querySelector('table');
+let addPoolBtn: HTMLElement | null = document.getElementById('add-pool');
 
-// if (addBlockBtn) {
-//     addBlockBtn.onclick = function (element) {
-//         // let color = element.target.value;
-//         console.log('clicked');
-//         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-//             // chrome.tabs.executeScript(
-//             //     tabs[0].id,
-//             //     { code: `document.body.style.backgroundColor = '${color}';` });
-//             console.log(tabs);
-//             chrome.tabs.executeScript({
-//                 file: 'scripts/contentscript.js'
-//             });
-//         });
-//     };
-// }
 
-if (savePoolBtn) {
+if (table) {
+    table.addEventListener('click', handleTableClick);
+}
 
-    savePoolBtn.onclick = (element: MouseEvent) => {
+if (addPoolBtn) {
+    addPoolBtn.onclick = async (element: MouseEvent) => {
 
         const name: string = <string>$('#pool-name').val();
         const lastBlockHTMLSelector = $('#pool-block-selector').val();
         const pool = new Pool(name);
         pool.lastBlockHTMLSelector = <string>lastBlockHTMLSelector;
 
-        repositoryService.addPool(pool)
-            .then((result) => {
-                console.log(result);
-                updateTableBody();
-            }).catch((err) => {
-                console.log(err);
-            });
+        try {
+            await repositoryService.addPool(pool);
+            addPoolToTable(pool);
+        } catch (error) {
+            console.log(error);
+        }
 
     };
 }
 
 
-function updateTableBody() {
+function handleTableClick(event: MouseEvent) {
+    console.log(event);
+    if (event.target) {
 
+        let target = <HTMLButtonElement>event.target;
+        console.log(target.className);
+        switch (target.className) {
+            case 'remove-pool-btn':
+                let targetPoolName = getPoolNameOnDeleteClick(target);
+                repositoryService.removePool(targetPoolName);
+                removePoolFromTable(target);
+                break;
+
+            default:
+                break;
+        }
+    }
+}
+
+function getPoolNameOnDeleteClick(buttonEl: HTMLButtonElement): string {
+
+    if (buttonEl.parentElement && buttonEl.parentElement.parentElement) {
+        console.log(buttonEl.parentElement.parentElement.children[0].textContent);
+        return <string>buttonEl.parentElement.parentElement.children[0].textContent;
+    }
+
+    return '';
+
+}
+
+function removePoolFromTable(target: HTMLButtonElement): void {
+    if (target.className === 'remove-pool-btn') {
+        if (target.parentElement && target.parentElement.parentElement) {
+            target.parentElement.parentElement.remove();
+        }
+
+    }
+}
+
+function addPoolToTable(pool: Pool): void {
+    if (table) {
+        const row = table.insertRow();
+        row.insertCell().textContent = pool.name;
+        row.insertCell().innerHTML = `<input type="checkbox" name="pool-active">`;
+        row.insertCell().innerHTML = `<input type="checkbox" name="pool-base">`;
+        row.insertCell().innerHTML = `<button class="edit-pool-btn">Edit</button>`;
+        row.insertCell().innerHTML = `<button class="remove-pool-btn">Remove</button>`;
+    }
+}
+
+function initTable(): void {
     chrome.storage.sync.get(['pools'], (response) => {
-
-        const pools = response.pools;
-        let content = '';
-
-        pools.forEach((pool: IPool) => {
-            content += (`<tr>
-            <td data-label="pool-name">${pool.name}</td>
-            <td data-label="pool-active">
-                <input type="checkbox" name="pool-active" id="">
-            </td>
-            <td data-label="pool-base">
-                <input type="checkbox" name="pool-base" id="">
-            </td>
-        </tr>`);
-        });
-
-        $('#pools-table-body')
-            .empty()
-            .append(content);
+        const pools: IPool[] = response.pools;
+        if (table) {
+            for (let pool of pools) {
+                const row = table.insertRow();
+                row.insertCell().textContent = pool.name;
+                row.insertCell().innerHTML = `<input type="checkbox" name="pool-active">`;
+                row.insertCell().innerHTML = `<input type="checkbox" name="pool-base">`;
+                row.insertCell().innerHTML = `<button class="edit-pool-btn">Edit</button>`;
+                row.insertCell().innerHTML = `<button class="remove-pool-btn">Remove</button>`;
+            }
+        }
     });
 }
